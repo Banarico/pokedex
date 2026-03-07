@@ -4,9 +4,7 @@ import (
     "strings"
     "os"
     "fmt"
-    "net/http"
-    "io"
-    "encoding/json"
+    "github.com/Banarico/pokedex/internal/pokeapi"
 )
 
 func cleanInput(text string) []string {
@@ -41,13 +39,13 @@ func getCommands() map[string]cliCommand {
     return cmds
 }
 
-func commandExit() error {
+func commandExit(cfg *Config) error {
     fmt.Println("Closing the Pokedex... Goodbye!")
     os.Exit(0)
     return nil
 }
 
-func commandHelp() error {
+func commandHelp(cfg *Config) error {
     list := getCommands()
     fmt.Println("Welcome to the Pokedex!")
     fmt.Println("Usage:")
@@ -73,16 +71,38 @@ type List struct {
     } `json:"results"`
 }
 
-func commandMap() error {
-    
+func commandMap(cfg *Config) error {
+    command, err := cfg.pokeapiClient.ListLocations(cfg.nextLocationsURL)
+    if err != nil {
+        fmt.Println(err)
+    }
+    cfg.nextLocationsURL = command.Next
+    cfg.prevLocationsURL = command.Previous
+    for _, a := range command.Results {
+        fmt.Println(a.Name)
+    }
+    return nil
 }
 
-func commandMapb() error {
-    
+func commandMapb(cfg *Config) error {
+    if cfg.prevLocationsURL == nil {
+        fmt.Println("you're on the first page")
+        return nil
+    }
+    command, err := cfg.pokeapiClient.ListLocations(cfg.prevLocationsURL)
+    if err != nil {
+        fmt.Println(err)
+    }
+    cfg.nextLocationsURL = command.Next
+    cfg.prevLocationsURL = command.Previous
+    for _, a := range command.Results {
+        fmt.Println(a.Name)
+    }
+    return nil
 }
 
 type cliCommand struct {
         name        string
         description string
-        callback    func() error
+        callback    func(*Config) error
 }

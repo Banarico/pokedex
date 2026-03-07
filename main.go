@@ -4,23 +4,44 @@ import (
     "bufio"
     "fmt"
     "os"
+    "time"
+    "github.com/Banarico/pokedex/internal/pokeapi"
 )
 
+func startRepl(cfg *Config) {
+	scanner := bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Print("Pokedex > ")
+		// Wait for the user to type something and press enter
+		scanner.Scan()
+
+		// Get the text the user typed
+		words := cleanInput(scanner.Text())
+		if len(words) == 0 {
+			continue
+		}
+
+		commandName := words[0]
+
+		// Look up the command in your map of commands
+		command, exists := getCommands()[commandName]
+		if exists {
+			err := command.callback(cfg)
+			if err != nil {
+				fmt.Println(err)
+			}
+			continue
+		} else {
+			fmt.Println("Unknown command")
+			continue
+		}
+	}
+}
+
 func main() {
-    scanner := bufio.NewScanner(os.Stdin)
-    for {
-        fmt.Print("Pokedex > ")
-        scanner.Scan()
-        line := scanner.Text()
-        cmds := getCommands()
-        cmd, ok := cmds[line]
-        if ok {
-            err := cmd.callback()
-            if err != nil {
-                fmt.Println(err)
-            }
-        } else {
-            fmt.Println("Unknown command")
-        }
+    pokeClient := pokeapi.NewClient(5 * time.Second)
+    cfg := &Config{
+        pokeapiClient: pokeClient,
     }
+    startRepl(cfg)
 }

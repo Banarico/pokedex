@@ -1,5 +1,10 @@
 package pokeapi
 
+import (
+    "time"
+    "net/http"
+)
+
 type Client struct {
     httpClient http.Client
 }
