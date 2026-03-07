@@ -7,7 +7,6 @@ import (
     "net/http"
     "io"
     "encoding/json"
-    "github.com/Banarico/pokedex"
 )
 
 func cleanInput(text string) []string {
@@ -59,8 +58,7 @@ func commandHelp() error {
     return nil
 }
 
-type config struct {
-    pokeapiClient    pokeapi.Client
+type Config struct {
     nextLocationsURL *string
     prevLocationsURL *string
 }
@@ -75,29 +73,15 @@ type List struct {
 }
 
 func commandMap() error {
-    res, err := http.Get("https://pokeapi.co/api/v2/location-area")
-    if err != nil {
-        return err
-    }
-    defer res.Body.Close()
-    data, err := io.ReadAll(res.Body)
-    if err != nil {
-        return err
-    }
-    areas := List{}
-    err = json.Unmarshal(data, &areas)
-    if err != nil {
-        return err
-    }
-    for _, a := range areas.Results {
-        fmt.Println(a.Name)
-        config.prevLocationsURL = a.URL
-    }
-    return nil
+    
+}
+
+func commandMapb() error {
+    
 }
 
 type cliCommand struct {
         name        string
         description string
-        callback    func(*config) error
+        callback    func() error
 }
