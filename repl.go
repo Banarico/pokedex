@@ -7,6 +7,7 @@ import (
     "net/http"
     "io"
     "encoding/json"
+    "github.com/Banarico/pokedex"
 )
 
 func cleanInput(text string) []string {
