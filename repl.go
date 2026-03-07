@@ -59,7 +59,8 @@ func commandHelp() error {
 }
 
 type Config struct {
-    nextLocationsURL *string
+    pokeapiClient    pokeapi.Client
+    nextLocationsURL *string // use a pointer because these can be null
     prevLocationsURL *string
 }
 
