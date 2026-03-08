@@ -6,6 +6,7 @@ import (
     "os"
     "time"
     "github.com/Banarico/pokedex/internal/pokeapi"
+    "github.com/Banarico/pokedex/internal/pokecache"
 )
 
 func startRepl(cfg *Config) {
@@ -39,9 +40,11 @@ func startRepl(cfg *Config) {
 }
 
 func main() {
-    pokeClient := pokeapi.NewClient(5 * time.Second)
+    chc := pokecache.NewCache(5 * time.Second)
+    pokeClient := pokeapi.NewClient(5 * time.Second, chc)
     cfg := &Config{
         pokeapiClient: pokeClient,
+        cache:  chc,
     }
     startRepl(cfg)
 }

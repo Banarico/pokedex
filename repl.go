@@ -5,6 +5,7 @@ import (
     "os"
     "fmt"
     "github.com/Banarico/pokedex/internal/pokeapi"
+    "github.com/Banarico/pokedex/internal/pokecache"
 )
 
 func cleanInput(text string) []string {
@@ -49,7 +50,6 @@ func commandHelp(cfg *Config) error {
     list := getCommands()
     fmt.Println("Welcome to the Pokedex!")
     fmt.Println("Usage:")
-    fmt.Println("\n")
     for _, cmd := range list {
         fmt.Printf("%s: %s\n", cmd.name, cmd.description)
     }
@@ -58,6 +58,7 @@ func commandHelp(cfg *Config) error {
 
 type Config struct {
     pokeapiClient    pokeapi.Client
+    cache            pokecache.Cache
     nextLocationsURL *string // use a pointer because these can be null
     prevLocationsURL *string
 }
