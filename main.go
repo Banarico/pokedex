@@ -23,11 +23,12 @@ func startRepl(cfg *Config) {
 		}
 
 		commandName := words[0]
+                arguments := words[1:]
 
 		// Look up the command in your map of commands
 		command, exists := getCommands()[commandName]
 		if exists {
-			err := command.callback(cfg)
+			err := command.callback(cfg, arguments...)
 			if err != nil {
 				fmt.Println(err)
 			}
