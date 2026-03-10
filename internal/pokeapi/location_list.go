@@ -423,6 +423,14 @@ func (c *Client) ListLocations(pageURL *string) (RespShallowLocations, error) {
 
 func (c *Client) PokemonList(arg string) (RespAreaPokemon, error) {
     url := "https://pokeapi.co/api/v2/location-area/" + arg
+    if cached, ok := c.cache.Get(url); ok {
+        pokemonResp := RespAreaPokemon{}
+        err := json.Unmarshal(cached, &pokemonResp)
+        if err != nil {
+            return RespAreaPokemon{}, err
+        }
+        return pokemonResp, nil
+    }
     req, err := http.Get(url)
     if err != nil {
         return RespAreaPokemon{}, err
@@ -436,6 +444,7 @@ func (c *Client) PokemonList(arg string) (RespAreaPokemon, error) {
     if err != nil {
         return RespAreaPokemon{}, err
     }
+    c.cache.Add(url, data)
     return pokemonResp, nil
 }
 
