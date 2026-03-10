@@ -6,6 +6,7 @@ import (
     "fmt"
     "github.com/Banarico/pokedex/internal/pokeapi"
     "github.com/Banarico/pokedex/internal/pokecache"
+    "math/rand"
 )
 
 func cleanInput(text string) []string {
@@ -41,6 +42,11 @@ func getCommands() map[string]cliCommand {
             description: "A list of Pokemon for a specific area",
             callback:    commandExpl,
         },
+        "catch": {
+            name:        "catch",
+            description: "Attempt to catch a given Pokemon",
+            callback:    commandCatch,
+        },
     }
     return cmds
 }
@@ -66,6 +72,7 @@ type Config struct {
     cache            pokecache.Cache
     nextLocationsURL *string // use a pointer because these can be null
     prevLocationsURL *string
+    caughtPkm        map[string]pokeapi.Pokemon
 }
 
 type List struct {
@@ -116,6 +123,23 @@ func commandExpl(cfg *Config, arg ...string) error {
     fmt.Println("Found Pokemon:")
     for _, encounter := range area.Encounter {
         fmt.Printf(" - %s\n", encounter.Pokemon.Pname)
+    }
+    return nil
+}
+
+func commandCatch(cfg *Config, arg ...string) error {
+    fmt.Printf("Throwing a Pokeball at %s...\n", arg[0])
+    pkm, err := cfg.pokeapiClient.GetPokemon(arg[0])
+    if err != nil {
+       fmt.Println(err)
+    }
+    throw := rand.Intn(320)
+    if throw >= pkm.BaseExp {
+        cfg.caughtPkm[pkm.Name] = pkm
+        fmt.Printf("%s was caught!\n", pkm.Name)
+    }
+    if throw < pkm.BaseExp {
+        fmt.Printf("%s escaped!\n", pkm.Name)
     }
     return nil
 }

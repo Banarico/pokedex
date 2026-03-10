@@ -46,6 +46,7 @@ func main() {
     cfg := &Config{
         pokeapiClient: pokeClient,
         cache:  chc,
+        caughtPkm: make(map[string]pokeapi.Pokemon),
     }
     startRepl(cfg)
 }
